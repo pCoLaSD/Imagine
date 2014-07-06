@@ -83,16 +83,17 @@ final class Imagine extends AbstractImagine
      */
     public function open($path)
     {
+        $path = $this->checkPath($path);
         $data = @file_get_contents($path);
 
         if (false === $data) {
-            throw new InvalidArgumentException(sprintf('File %s doesn\'t exist', $path));
+            throw new RuntimeException(sprintf('Failed to open file %s', $path));
         }
 
         $resource = @imagecreatefromstring($data);
 
         if (!is_resource($resource)) {
-            throw new InvalidArgumentException(sprintf('Unable to open image %s', $path));
+            throw new RuntimeException(sprintf('Unable to open image %s', $path));
         }
 
         return $this->wrap($resource, new RGB(), $this->getMetadataReader()->readFile($path));

@@ -506,17 +506,20 @@ final class Image extends AbstractImage
             ColorInterface::COLOR_MAGENTA => \Imagick::COLOR_MAGENTA,
             ColorInterface::COLOR_YELLOW  => \Imagick::COLOR_YELLOW,
             ColorInterface::COLOR_KEYLINE => \Imagick::COLOR_BLACK,
+            // There is no gray component in \Imagick, let's use one of the RGB comp
             ColorInterface::COLOR_GRAY    => \Imagick::COLOR_RED,
         );
 
         $alpha = $this->palette->supportsAlpha() ? (int) round($pixel->getColorValue(\Imagick::COLOR_ALPHA) * 100) : null;
+        $palette = $this->palette();
 
-        return $this->palette->color(array_map(function ($color) use ($pixel, $colorMapping) {
+        return $this->palette->color(array_map(function ($color) use ($palette, $pixel, $colorMapping) {
             if (!isset($colorMapping[$color])) {
                 throw new InvalidArgumentException(sprintf('Color %s is not mapped in Imagick', $color));
             }
             $multiplier = 255;
-            if ($this->palette->name() === PaletteInterface::PALETTE_CMYK) {
+
+            if ($palette->name() === PaletteInterface::PALETTE_CMYK) {
                 $multiplier = 100;
             }
 

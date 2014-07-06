@@ -43,19 +43,13 @@ class Imagine extends AbstractImagine
      */
     public function open($path)
     {
-        $handle = @fopen($path, 'r');
-
-        if (false === $handle) {
-            throw new InvalidArgumentException(sprintf('File %s doesn\'t exist', $path));
-        }
-
-        fclose($handle);
+        $path = $this->checkPath($path);
 
         try {
             $gmagick = new \Gmagick($path);
             $image = new Image($gmagick, $this->createPalette($gmagick), $this->getMetadataReader()->readFile($path));
         } catch (\GmagickException $e) {
-            throw new RuntimeException(sprintf('Could not open image %s', $path), $e->getCode(), $e);
+            throw new RuntimeException(sprintf('Unable to open image %s', $path), $e->getCode(), $e);
         }
 
         return $image;

@@ -554,6 +554,7 @@ final class Image extends AbstractImage
             ColorInterface::COLOR_MAGENTA => \Gmagick::COLOR_MAGENTA,
             ColorInterface::COLOR_YELLOW  => \Gmagick::COLOR_YELLOW,
             ColorInterface::COLOR_KEYLINE => \Gmagick::COLOR_BLACK,
+            // There is no gray component in \Gmagick, let's use one of the RGB comp
             ColorInterface::COLOR_GRAY    => \Gmagick::COLOR_RED,
         );
 
