@@ -518,7 +518,6 @@ final class Image extends AbstractImage
                 throw new InvalidArgumentException(sprintf('Color %s is not mapped in Imagick', $color));
             }
             $multiplier = 255;
-
             if ($palette->name() === PaletteInterface::PALETTE_CMYK) {
                 $multiplier = 100;
             }
