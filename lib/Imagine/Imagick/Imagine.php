@@ -36,8 +36,10 @@ final class Imagine extends AbstractImagine
             throw new RuntimeException('Imagick not installed');
         }
 
-        if (version_compare('6.2.9', $this->getVersion(new \Imagick())) > 0) {
-            throw new RuntimeException('ImageMagick version 6.2.9 or higher is required');
+        $version = $this->getVersion(new \Imagick());
+
+        if (version_compare('6.2.9', $version) > 0) {
+            throw new RuntimeException(sprintf('ImageMagick version 6.2.9 or higher is required, %s provided', $version));
         }
     }
 
@@ -71,7 +73,7 @@ final class Imagine extends AbstractImagine
 
         try {
             $pixel = new \ImagickPixel((string) $color);
-            $pixel->setColorValue(\Imagick::COLOR_ALPHA, number_format(round($color->getAlpha() / 100, 2), 1));
+            $pixel->setColorValue(\Imagick::COLOR_ALPHA, $color->getAlpha() / 100);
 
             $imagick = new \Imagick();
             $imagick->newImage($width, $height, $pixel);
@@ -117,14 +119,16 @@ final class Imagine extends AbstractImagine
             throw new InvalidArgumentException('Variable does not contain a stream resource');
         }
 
+        $content = stream_get_contents($resource);
+
         try {
             $imagick = new \Imagick();
-            $imagick->readImageFile($resource);
+            $imagick->readImageBlob($content);
         } catch (\ImagickException $e) {
             throw new RuntimeException('Could not read image from resource', $e->getCode(), $e);
         }
 
-        return new Image($imagick, $this->createPalette($imagick), $this->getMetadataReader()->readStream($resource));
+        return new Image($imagick, $this->createPalette($imagick), $this->getMetadataReader()->readData($content, $resource));
     }
 
     /**
